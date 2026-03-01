@@ -8,3 +8,9 @@ artifacts/
 .DS_Store
 
 .sessions/
+
+.env
+.sessions/
+artifacts/
+__pycache__/
+*.pyc

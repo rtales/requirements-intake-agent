@@ -82,3 +82,20 @@ def send_message(session_id: str, req: UserMessageRequest):
     save(sess)
 
     return UserMessageResponse(session_id=sess.session_id, state=sess.state, assistant_message=assistant, question=q, has_package=sess.package is not None, package=sess.package)
+
+@router.post("/sessions/{session_id}/finalize", response_model=UserMessageResponse)
+def finalize_session(session_id: str):
+    if not exists(session_id):
+        raise HTTPException(status_code=404, detail="Sessão não encontrada")
+    sess = load(session_id)
+    pkg = build_package_from_session(sess)
+    sess.package = pkg
+    save(sess)
+    return UserMessageResponse(
+        session_id=sess.session_id,
+        state=sess.state,
+        assistant_message="✅ Pacote gerado.",
+        question=None,
+        has_package=True,
+        package=pkg,
+    )
