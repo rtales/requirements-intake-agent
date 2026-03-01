@@ -1,0 +1,283 @@
+{
+  "meta": {
+    "id": "REQ-2026-000001",
+    "title": "Requirements Assistant to standardize intake and reduce rework",
+    "created_at": "2026-02-28T12:00:00Z",
+    "version": "v1",
+    "status": "draft",
+    "owner_area": "IT",
+    "source": {
+      "channel": "free_text",
+      "raw_hash": "<sha256>",
+      "redaction_applied": true,
+      "attachments": []
+    },
+    "classification": {
+      "sensitivity": "internal",
+      "domain": "other",
+      "confidence": 0.82
+    },
+    "llm_trace": {
+      "provider": "openai",
+      "model": "gpt-4o-mini",
+      "tokens_in": 820,
+      "tokens_out": 610,
+      "cost_estimate": 0.0,
+      "run_id": "run_01",
+      "policy": "pilot-readonly"
+    }
+  },
+  "problem": {
+    "context": "Requests arrive through multiple channels and requirements are inconsistent across teams.",
+    "pain_points": [
+      "Rework due to ambiguity",
+      "Incomplete acceptance criteria",
+      "Non-functional requirements ignored early"
+    ],
+    "goal": "Create an internal agent that turns free text into a standardized requirements package with traceability.",
+    "success_definition": [
+      "Reduce intake time by 30%",
+      "Increase NFR completeness to >=90%",
+      "Reduce reopenings caused by unclear requirements by 20%"
+    ]
+  },
+  "scope": {
+    "in_scope": [
+      "Input via form or pasted text",
+      "Generate JSON package + DOCX/MD",
+      "Read-only mode in pilot"
+    ],
+    "out_of_scope": [
+      "Auto-create or modify tickets without approval",
+      "Production remediation actions"
+    ],
+    "assumptions": [
+      "A point-of-contact exists per area to validate"
+    ],
+    "constraints": [
+      "Run locally or on-prem",
+      "No sensitive data to external LLMs (redaction)"
+    ]
+  },
+  "stakeholders": {
+    "requester": {
+      "name": "<name>",
+      "role": "Requester",
+      "area": "<area>",
+      "email": "",
+      "phone": ""
+    },
+    "product_owner": {
+      "name": "<name>",
+      "role": "Product Owner",
+      "area": "IT",
+      "email": "",
+      "phone": ""
+    },
+    "tech_lead": {
+      "name": "<name>",
+      "role": "Tech Lead",
+      "area": "IT",
+      "email": "",
+      "phone": ""
+    },
+    "approvers": [
+      {
+        "name": "<name>",
+        "role": "Manager",
+        "area": "IT",
+        "email": "",
+        "phone": ""
+      }
+    ],
+    "users": [
+      "Business analysts",
+      "Engineers",
+      "Managers",
+      "Requesters"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "R001",
+      "type": "functional",
+      "statement": "The tool must accept a free-text request and generate a structured requirements package as JSON conforming to schema v1.",
+      "priority": "must",
+      "rationale": "Standard output enables automation and reduces ambiguity.",
+      "dependencies": [],
+      "evidence": {
+        "source_excerpt": "I want a configurable agent... economical... do not use the LLM for everything.",
+        "source_ref": "CHAT:example"
+      },
+      "tests": [
+        "T001: schema validation",
+        "T002: required fields present or 'unknown'"
+      ]
+    },
+    {
+      "id": "R002",
+      "type": "operational",
+      "statement": "The tool must render DOCX and Markdown from the JSON package using local libraries, without using the LLM for rendering.",
+      "priority": "must",
+      "rationale": "Reduce LLM costs and ensure consistent formatting.",
+      "dependencies": [
+        "R001"
+      ],
+      "evidence": {
+        "source_excerpt": "It should call native Python document generation libraries.",
+        "source_ref": "CHAT:example"
+      },
+      "tests": [
+        "T010: generate DOCX",
+        "T011: generate MD"
+      ]
+    },
+    {
+      "id": "R003",
+      "type": "security",
+      "statement": "The tool must apply redaction before sending content to any external LLM provider, using configurable rules.",
+      "priority": "must",
+      "rationale": "Prevent leakage of sensitive data.",
+      "dependencies": [],
+      "evidence": {
+        "source_excerpt": "It will run locally... choose provider... economical.",
+        "source_ref": "CHAT:example"
+      },
+      "tests": [
+        "T020: redact identifiers",
+        "T021: redaction flag set"
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC001",
+      "criterion": "Given a valid request, the tool returns JSON that validates against schema v1.",
+      "linked_requirements": [
+        "R001"
+      ]
+    },
+    {
+      "id": "AC002",
+      "criterion": "The generated DOCX contains the standard sections populated from JSON without calling the LLM.",
+      "linked_requirements": [
+        "R002"
+      ]
+    },
+    {
+      "id": "AC003",
+      "criterion": "Detectable sensitive identifiers are masked before any external LLM call.",
+      "linked_requirements": [
+        "R003"
+      ]
+    }
+  ],
+  "nfr": {
+    "security": {
+      "status": "needs_review",
+      "notes": "Run with least privilege, logs, kill switch.",
+      "checks": [
+        "Role-based access if shared",
+        "Audit logs",
+        "Kill switch"
+      ]
+    },
+    "privacy": {
+      "status": "needs_review",
+      "notes": "Redaction and minimization.",
+      "checks": [
+        "Mask identifiers",
+        "Avoid storing raw text by default"
+      ]
+    },
+    "availability": {
+      "status": "unknown",
+      "notes": "",
+      "checks": [
+        "Define SLA",
+        "Health checks"
+      ]
+    },
+    "performance": {
+      "status": "unknown",
+      "notes": "",
+      "checks": [
+        "Cache by hash",
+        "Input size limit"
+      ]
+    },
+    "observability": {
+      "status": "ok",
+      "notes": "JSON logs with run_id.",
+      "checks": [
+        "Correlation ID",
+        "Token/cost metrics"
+      ]
+    },
+    "usability": {
+      "status": "unknown",
+      "notes": "",
+      "checks": [
+        "Simple form UI",
+        "Export DOCX/MD"
+      ]
+    },
+    "compliance": {
+      "status": "unknown",
+      "notes": "",
+      "checks": [
+        "Data retention policy"
+      ]
+    }
+  },
+  "open_questions": [
+    {
+      "id": "Q001",
+      "question": "Which ticketing/backlog system will be used (if any) in later phases?",
+      "why_it_matters": "Defines integration fields and approvals.",
+      "target": "IT manager",
+      "status": "open",
+      "answer": ""
+    },
+    {
+      "id": "Q002",
+      "question": "Which data patterns must always be redacted?",
+      "why_it_matters": "Defines compliance and redaction rules.",
+      "target": "Security/Privacy",
+      "status": "open",
+      "answer": ""
+    }
+  ],
+  "risks": [
+    {
+      "id": "RK001",
+      "risk": "Sensitive data could bypass redaction due to incomplete patterns.",
+      "impact": "high",
+      "likelihood": "medium",
+      "mitigation": "Add patterns + tests + block on low confidence.",
+      "owner": "Security",
+      "status": "open"
+    },
+    {
+      "id": "RK002",
+      "risk": "LLM cost may grow with long prompts and multiple calls.",
+      "impact": "medium",
+      "likelihood": "medium",
+      "mitigation": "One structured call + cache + strict limits.",
+      "owner": "Tech Lead",
+      "status": "open"
+    }
+  ],
+  "traceability": {
+    "decision_log": [
+      {
+        "id": "D001",
+        "date": "2026-02-28",
+        "decision": "Pilot runs in read-only mode (no ticket creation).",
+        "rationale": "Reduce operational risk.",
+        "by": "IT"
+      }
+    ],
+    "links": []
+  }
+}

@@ -1,0 +1,51 @@
+app:
+  name: req-agent
+  env: dev
+
+llm:
+  provider: grok   # grok | openai | gemini
+  api_style: chat_completions
+
+  common:
+    temperature: 0.2
+    max_tokens: 1200
+    timeout_sec: 600
+
+  openai:
+    base_url: https://api.openai.com/v1
+    model: gpt-4o-mini
+    organization_id: ""
+    project_id: ""
+
+  grok:
+    base_url: https://api.x.ai/v1
+    model: grok-4-0709
+
+  gemini:
+    base_url: https://generativelanguage.googleapis.com/v1beta/openai/
+    model: gemini-3-flash-preview
+    thinking_level: low
+    include_thoughts: false
+
+security:
+  enable_redaction: true
+  store_raw_input: false
+  allowed_origins:
+    - http://localhost:8501
+
+guardrails:
+  max_input_chars: 12000
+  max_questions_per_turn: 8
+  max_llm_calls_per_request: 2
+  disallowed_patterns: []
+
+redaction:
+  patterns:
+    - cpf
+    - email
+    - tokenlike
+
+cost:
+  currency: USD
+  monthly_budget: 50.0
+  cache_enabled: true

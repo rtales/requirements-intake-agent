@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+configs/app.yaml
+artifacts/
+.cache/
+.DS_Store
+
+.sessions/
